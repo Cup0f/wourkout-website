@@ -1,62 +1,148 @@
 ﻿import React from "react";
 import Logo from "../../assets/logo.png";
-import { HiMenuAlt1, HiMenuAlt3 } from "react-icons/hi";
+import {HiMenuAlt1, HiMenuAlt3} from "react-icons/hi";
+import {NavLink} from "react-router-dom";
 import DarkMode from "./DarkMode";
 
 const NavLinks = [
+    {name: "Kezdőlap", link: "/"},
+    {name: "Naptár", link: "/calendar"},
     {
-        id: 1,
-        name: "Home",
-        link: "#",
+        name: "Edzések",
+        link: "/workouts",
+        submenu: [
+            {name: "Tervező", link: "/workouts/planner"},
+            {name: "Push", link: "/workouts/push"},
+            {name: "Pull", link: "/workouts/pull"},
+            {name: "Leg", link: "/workouts/leg"},
+        ],
     },
-    {
-        id: 2,
-        name: "Products",
-        link: "#",
-    },
-    {
-        id: 3,
-        name: "Pricing",
-        link: "#",
-    },
+    {name: "Térkép", link: "/map"},
 ];
 
 const Navbar = () => {
     const [showMenu, setShowMenu] = React.useState(false);
-    const toggleMenu = () => setShowMenu(!showMenu);
+    const [openMenuKey, setOpenMenuKey] = React.useState(null);
+    const toggleMenu = () => setShowMenu((p) => !p);
+
+    React.useEffect(() => {
+        const onClick = (e) => {
+            if (!e.target.closest("[data-dropdown]")) {
+                setOpenMenuKey(null);
+            }
+        };
+
+        document.addEventListener("mousedown", onClick);
+        return () => document.removeEventListener("mousedown", onClick);
+    }, []);
 
     return (
         <div className="relative z-9999 text-black dark:text-white duration-300">
             <div className="container py-2 md:py-0">
                 <div className="flex justify-between items-center">
-                    <div className="flex items-center gap-3">
-                        <img src={Logo} alt="Logo" className="h-16" />
+                    <NavLink
+                        to="/"
+                        className="flex items-center gap-3"
+                        onClick={() => {
+                            setOpenMenuKey(null);
+                            setShowMenu(false);
+                        }}
+                    >
+                        <img src={Logo} alt="Logo" className="h-16"/>
                         <p className="text-3xl">
                             GYM <span className="font-bold">World</span>
                         </p>
-                    </div>
+                    </NavLink>
 
+                    {/* DESKTOP */}
                     <nav className="hidden md:block">
                         <ul className="flex items-center gap-8">
-                            {NavLinks.map(({ id, name, link }) => {
-                                return (
-                                    <li key={id} className="py-4">
-                                        <a
-                                            href={link}
-                                            className="text-xl font-semibold hover:text-pink-700 py-2
-                    hover:border-b-2
-                    hover:border-sky-700
-                    transition-colors duration-500"
+                            {NavLinks.map(({name, link, submenu}) => (
+                                <li key={link} className="relative" data-dropdown>
+                                    {submenu ? (
+                                        <>
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    setOpenMenuKey(openMenuKey === link ? null : link)
+                                                }
+                                                className="text-xl font-semibold py-2
+                                                  hover:text-pink-700
+                                                  hover:border-b-2 hover:border-sky-700
+                                                  transition-colors duration-500"
+                                            >
+                                                {name}
+                                            </button>
+
+                                            {openMenuKey === link && (
+                                                <ul
+                                                    className="absolute left-0 top-full mt-2 min-w-45
+                                                        rounded-xl shadow-lg border
+                                                        border-black/10 dark:border-white/10
+                                                        bg-white/95 dark:bg-slate-900/95
+                                                        backdrop-blur-md
+                                                        overflow-hidden"
+                                                >
+                                                    {/* opcionális: legyen egy 'Összes' link is */}
+                                                    <li>
+                                                        <NavLink
+                                                            to={link}
+                                                            className="block px-4 py-3 text-base font-semibold
+                                                            text-black dark:text-white
+                                                            hover:text-pink-700
+                                                            hover:bg-sky-50 dark:hover:bg-white/5
+                                                            transition-colors duration-300"
+                                                            onClick={() => setOpenMenuKey(null)}
+                                                        >
+                                                            Összes
+                                                        </NavLink>
+                                                    </li>
+
+                                                    {submenu.map((item) => (
+                                                        <li key={item.link}>
+                                                            <NavLink
+                                                                to={item.link}
+                                                                className="block px-4 py-3 text-base font-semibold
+                                                                  text-black dark:text-white
+                                                                  hover:text-pink-700
+                                                                  hover:bg-sky-50 dark:hover:bg-white/5
+                                                                  transition-colors duration-300"
+                                                                onClick={() => setOpenMenuKey(null)}
+                                                            >
+                                                                {item.name}
+                                                            </NavLink>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            )}
+                                        </>
+                                    ) : (
+                                        <NavLink
+                                            to={link}
+                                            className={({isActive}) =>
+                                                `text-xl font-semibold py-2
+                                                 hover:text-pink-700
+                                                 hover:border-b-2 hover:border-sky-700
+                                                 transition-colors duration-500
+                                                 ${
+                                                    isActive
+                                                        ? "text-pink-700 border-b-2 border-sky-700"
+                                                        : ""
+                                                }`
+                                            }
+                                            onClick={() => setOpenMenuKey(null)}
                                         >
                                             {name}
-                                        </a>
-                                    </li>
-                                );
-                            })}
-                            <DarkMode />
+                                        </NavLink>
+                                    )}
+                                </li>
+                            ))}
+
+                            <DarkMode/>
                         </ul>
                     </nav>
 
+                    {/* MOBILE ICONS */}
                     <div className="md:hidden block">
                         <div className="flex items-center gap-4">
                             <DarkMode/>
@@ -76,6 +162,71 @@ const Navbar = () => {
                         </div>
                     </div>
                 </div>
+                
+                {showMenu && (
+                    <div
+                        className="md:hidden mt-3 rounded-xl border border-black/10 dark:border-white/10 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md overflow-hidden">
+                        <ul className="flex flex-col">
+                            {NavLinks.map(({name, link, submenu}) => (
+                                <li key={link} className="border-b border-black/5 dark:border-white/10">
+                                    {!submenu ? (
+                                        <NavLink
+                                            to={link}
+                                            className="block px-4 py-3 font-semibold hover:text-pink-700"
+                                            onClick={() => {
+                                                setShowMenu(false);
+                                                setOpenMenuKey(null);
+                                            }}
+                                        >
+                                            {name}
+                                        </NavLink>
+                                    ) : (
+                                        <>
+                                            <button
+                                                type="button"
+                                                className="w-full text-left px-4 py-3 font-semibold hover:text-pink-700"
+                                                onClick={() =>
+                                                    setOpenMenuKey(openMenuKey === link ? null : link)
+                                                }
+                                            >
+                                                {name}
+                                            </button>
+
+                                            {openMenuKey === link && (
+                                                <div className="pb-2">
+                                                    <NavLink
+                                                        to={link}
+                                                        className="block px-6 py-2 text-sm font-semibold hover:text-pink-700"
+                                                        onClick={() => {
+                                                            setShowMenu(false);
+                                                            setOpenMenuKey(null);
+                                                        }}
+                                                    >
+                                                        Összes
+                                                    </NavLink>
+
+                                                    {submenu.map((s) => (
+                                                        <NavLink
+                                                            key={s.link}
+                                                            to={s.link}
+                                                            className="block px-6 py-2 text-sm font-semibold hover:text-pink-700"
+                                                            onClick={() => {
+                                                                setShowMenu(false);
+                                                                setOpenMenuKey(null);
+                                                            }}
+                                                        >
+                                                            {s.name}
+                                                        </NavLink>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </>
+                                    )}
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
             </div>
         </div>
     );
