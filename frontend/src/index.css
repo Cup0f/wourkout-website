@@ -28,3 +28,103 @@
         }
     }
 }
+
+.nav-panel {
+    position: relative;
+    /* overflow: hidden;  <-- EZ vágja le a submenu-t, ezt vedd ki */
+    isolation: isolate;
+    border-radius: 16px; /* vagy amit használsz */
+
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+
+    transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+.nav-panel::before {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 160ms ease;
+
+    border-radius: inherit; /* fontos */
+    pointer-events: none;
+
+    background: radial-gradient(
+            320px circle at var(--mx, 50%) var(--my, 50%),
+            rgba(34, 211, 238, 0.18) 0%,
+            rgba(236, 72, 153, 0.10) 40%,
+            transparent 72%
+    );
+}
+
+.nav-panel::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+
+    border-radius: inherit; /* fontos */
+    pointer-events: none;
+
+    opacity: 0.9;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.06), transparent 90%);
+}
+
+.nav-panel:hover::before {
+    opacity: 1;
+}
+
+.nav-panel:hover {
+    border-color: rgba(34, 211, 238, 0.18);
+    box-shadow:
+            0 0 18px rgba(34, 211, 238, 0.08),
+            0 0 24px rgba(236, 72, 153, 0.05);
+}
+
+/* A linkek/gombok: ne legyen saját “spotlight”, csak clean hover */
+.nav-item {
+    position: relative;
+    color: inherit;
+    transition: background 140ms ease, color 140ms ease;
+}
+
+.nav-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Active: picit “tömörebb” highlight */
+.nav-item--active {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+/* Dark mode finomhangolás */
+.dark .nav-panel {
+    background: rgba(255, 255, 255, 0.02);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.dark .nav-item:hover {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+/* Accessibility */
+.nav-item:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.22);
+    border-radius: 12px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .nav-panel,
+    .nav-panel::before,
+    .nav-item {
+        transition: none !important;
+    }
+}

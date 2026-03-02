@@ -36,6 +36,13 @@ const Navbar = () => {
         return () => document.removeEventListener("mousedown", onClick);
     }, []);
 
+    const onNavPanelMove = (e) => {
+        const el = e.currentTarget;
+        const r = el.getBoundingClientRect();
+        el.style.setProperty("--mx", `${e.clientX - r.left}px`);
+        el.style.setProperty("--my", `${e.clientY - r.top}px`);
+    };
+
     return (
         <div className="relative z-9999 text-black dark:text-white duration-300">
             <div className="container py-2 md:py-0">
@@ -56,24 +63,23 @@ const Navbar = () => {
 
                     {/* DESKTOP */}
                     <nav className="hidden md:block">
-                        <ul className="flex items-center gap-8">
-                            {NavLinks.map(({name, link, submenu}) => (
+                        <ul
+                            className="nav-panel flex items-center gap-2 px-2 py-2 rounded-2xl"
+                            onMouseMove={onNavPanelMove}
+                        >
+                            {NavLinks.map(({ name, link, submenu }) => (
                                 <li key={link} className="relative" data-dropdown>
                                     {submenu ? (
                                         <>
                                             <button
                                                 type="button"
-                                                onClick={() =>
-                                                    setOpenMenuKey(openMenuKey === link ? null : link)
-                                                }
-                                                className="text-xl font-semibold py-2
-                                                  hover:text-pink-700
-                                                  hover:border-b-2 hover:border-sky-700
-                                                  transition-colors duration-500"
+                                                onClick={() => setOpenMenuKey(openMenuKey === link ? null : link)}
+                                                className="nav-item text-xl font-semibold px-4 py-2 rounded-xl"
                                             >
                                                 {name}
                                             </button>
 
+                                            {/* dropdown ugyanaz maradhat */}
                                             {openMenuKey === link && (
                                                 <ul
                                                     className="absolute left-0 top-full mt-2 min-w-45
@@ -119,16 +125,9 @@ const Navbar = () => {
                                     ) : (
                                         <NavLink
                                             to={link}
-                                            className={({isActive}) =>
-                                                `text-xl font-semibold py-2
-                                                 hover:text-pink-700
-                                                 hover:border-b-2 hover:border-sky-700
-                                                 transition-colors duration-500
-                                                 ${
-                                                    isActive
-                                                        ? "text-pink-700 border-b-2 border-sky-700"
-                                                        : ""
-                                                }`
+                                            className={({ isActive }) =>
+                                                `nav-item text-xl font-semibold px-4 py-2 rounded-xl
+             ${isActive ? "nav-item--active" : ""}`
                                             }
                                             onClick={() => setOpenMenuKey(null)}
                                         >
@@ -138,7 +137,7 @@ const Navbar = () => {
                                 </li>
                             ))}
 
-                            <DarkMode/>
+                            <DarkMode />
                         </ul>
                     </nav>
 
