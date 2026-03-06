@@ -11,10 +11,7 @@ const NavLinks = [
         name: "Edzések",
         link: "/workouts",
         submenu: [
-            {name: "Tervező", link: "/workouts/planner"},
-            {name: "Push", link: "/workouts/push"},
-            {name: "Pull", link: "/workouts/pull"},
-            {name: "Leg", link: "/workouts/leg"},
+            {name: "Edzés napok", link: "/workouts/days"},
         ],
     },
     {name: "Térkép", link: "/map"},
@@ -100,7 +97,7 @@ const Navbar = () => {
                                                             transition-colors duration-300"
                                                             onClick={() => setOpenMenuKey(null)}
                                                         >
-                                                            Összes
+                                                            Gyakorlatok
                                                         </NavLink>
                                                     </li>
 
